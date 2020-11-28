@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pieChart</title>
+    <script crossorigin="anonymous" integrity="sha512-6JB5BcwbjvINvfF/J1slUqDUczr5/LG5eo8ODEkwDGugDLF+9bR47pFRNIdKqaZ5VSrTOexibcdrq/D0zOdBdw==" src="https://lib.baomitu.com/echarts/5.0.0/echarts.js"></script>
+    <style>
+        .pieChart{
+            width:400px;
+            height:400px;
+            position: absolute;
+            top:50%;
+            left:50%;
+            transform: translate(-50%, -50%);
+        }
+        .Chartnum{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            line-height: 40px;
+            width:200px;
+            height:40px;
+            font-size: 30px;
+            color:#000
+        }
+    </style>
+</head>
+<body>
+    <div id="Chartnum" class="Chartnum"></div>
+    <div class="pieChart" id='main'></div>
+</body>
+<script>
+    function $(id) {
+        return document.getElementById(id);
+        // return document.getElementsByClassName(id);
+    }
+    console.log(document.getElementById('Chartnum'))
+    function setInnerText(element,text) {
+        //判断浏览器是否支持这个属性
+        if(typeof element.textContent =="undefined"){//不支持
+        element.innerHTML=text;
+        }else{//支持这个属性
+        element.textContent=text;
+        }
+    }
+
+    //获取任意标签中间的文本内容
+    function getInnerText(element) {
+        if(typeof element.textContent=="undefined"){
+        return element.innerHTML;
+        }else{
+        return element.textContent;
+        }
+    }
+    var Chartnum= $('.Chartnum')
+    var obj={aitem:{label:'邮件营销',num:100},bitem:{label:'直接访问',num:700}}
+function setData(obj){
+    window.sData = []
+    var total =obj.total
+    var alabel =obj.aitem.label
+    var anum =obj.aitem.num
+    var blabel =obj.bitem.label
+    var bnum =obj.bitem.num
+    var total =anum + bnum
+    var itemValue =  1
+    if(anum > bnum){
+        itemValue = anum/100
+    }else{
+        itemValue = bnum/100
+    }
+    window.aNum= anum
+    window.bNum= bnum
+    console.log(Math.ceil((anum/total)*100)  , Math.ceil((bnum/total)*100))
+    for (let index = 0; index < (anum/total)*50; index++) {
+            sData.push(
+                {
+                    value: itemValue,
+                    name: alabel,
+                    itemStyle:{
+                                borderWidth:4,
+                                borderColor:'#fff'
+                    }
+                }
+            )
+    }
+    for (let index = 0; index < (bnum/total)*50; index++) {
+            sData.push(
+                {
+                    value:itemValue,
+                    name: blabel,
+                    itemStyle:{
+                                borderWidth:4,
+                                borderColor:'#fff'
+                    }
+                }
+            )
+    }
+
+
+    setInnerText($('Chartnum'),aNum)
+    console.log(anum,bnum,'|',alabel,aNum,blabel,bNum)
+}
+// 设置chartData
+setData(obj)
+function chartInit(){
+    var myChart = echarts.init(document.getElementById('main'));
+
+    // 指定图表的配置项和数据
+    var option =  {
+        tooltip:{
+            show:true,
+            trigger: 'item',
+            formatter:'{b}:{c}'
+        },
+        polar: {
+            radius: ['51%', '47%'],
+            center: ['50%', '50%'],
+        },
+        angleAxis: {
+            max: 100,
+            show: false,
+            startAngle: 0,
+        },
+        radiusAxis: {
+            type: 'category',
+            show: true,
+            axisLabel: {
+                show: false,
+            },
+            axisLine: {
+                show: false,
+
+            },
+            axisTick: {
+                show: false
+            },
+        },
+        series: [
+            {
+                type: 'pie',
+                data: sData,
+                radius: ['52%', '59%'],
+                barWidth:20,
+                itemStyle: {
+                    normal: {
+                        borderColor: '#1f1e26',
+                        borderWidth: 4,
+                    }
+                },
+                label: {
+                    normal: {
+                        position: 'inside',
+                        show: false,
+                        fontSize:30,
+                        formatter:function(e){
+                            if(e.name == 'name'){
+                                return bNum
+                            }else{
+                                return aNum
+                            }
+                        },
+                        position:'center'
+                    }
+                },
+            },
+
+        ]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option,true);
+    window.onresize =myChart.resize()
+    myChart.on('mouseover',function(params){
+        if(params.name == "邮件营销"){
+            setInnerText($('Chartnum'),aNum)
+        }else{
+            setInnerText($('Chartnum'),bNum)
+        }
+        console.log($('Chartnum'))
+    })
+}
+chartInit()
+</script>
+</html>
